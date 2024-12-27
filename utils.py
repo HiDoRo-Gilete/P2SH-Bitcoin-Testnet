@@ -41,3 +41,28 @@ def create_signed_transaction(inputs, outputs, my_private_key):
 
     VerifyScript(tx.vin[0].scriptSig, my_address.to_scriptPubKey(), tx, 0)
     return tx
+
+#============================================= P2SH ===========================================
+import requests
+def broadcast_testnet_transaction_blockstream(raw_transaction):
+    """Broadcasts a raw transaction to the Bitcoin testnet using Blockstream.info API.
+
+    Args:
+        raw_transaction: The hex-encoded string representing the raw transaction.
+
+    Returns:
+        The transaction ID (txid) as a string if successful, or None if an error occurs.
+    """
+    url = "https://blockstream.info/testnet/api/tx"
+    headers = {'Content-Type': 'text/plain'}  # Important for Blockstream API
+
+    try:
+        response = requests.post(url, headers=headers, data=raw_transaction)
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+        txid = response.text  # Blockstream returns the txid directly in the response body
+        return txid
+    except requests.exceptions.RequestException as e:
+        print(f"Error broadcasting transaction: {e}")
+        if hasattr(e.response, 'text'):  # Print response text if available
+            print(f"Server response: {e.response.text}")
+        return None

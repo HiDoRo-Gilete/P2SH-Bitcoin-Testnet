@@ -31,8 +31,8 @@ address = CBitcoinAddress.from_scriptPubKey(script_pubkey)
 print('Address:',str(address))
 
 
-txid = lx("2bc9d15610ddc3d71861f7cc9ce281093c7d5680cffd00ac1197b5a944b421e7")
-vout = 0
+txid = lx("...")
+vout = 1 
 
 # Specify the amount send to your P2WSH address.
 amount = 1000
@@ -73,8 +73,10 @@ sig2 = seckey2.sign(sighash) + bytes([SIGHASH_ALL])
 txin.scriptSig = CScript([OP_0, sig1, sig2, redeem_script])
 VerifyScript(txin.scriptSig, script_pubkey, tx, 0, (SCRIPT_VERIFY_P2SH,))
 # Done
+#broadcast
+tx_hex = b2x(tx.serialize())
 
-txid=utils.broadcast_testnet_transaction_blockstream(tx)
+txid=utils.broadcast_testnet_transaction_blockstream(tx_hex)
 if txid !=None:
     print("Transaction detail")
     explorer.get_transaction_detail(txid)
