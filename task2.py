@@ -31,7 +31,7 @@ address = CBitcoinAddress.from_scriptPubKey(script_pubkey)
 print('Address:',str(address))
 
 
-txid = lx("...")
+txid = lx("234bb48a9eee1b95c25be883f1784f984c6973527950e1be5cb0821bacca148d")
 vout = 1 
 
 # Specify the amount send to your P2WSH address.
@@ -48,7 +48,7 @@ txin = CMutableTxIn(COutPoint(txid, vout))
 destination = CBitcoinAddress("2N4rB5gabVodvewzAbZXAcEJd2SFZWPpDfA").to_scriptPubKey() 
 address_change = CBitcoinAddress("2N64Gjq151UBNkBoceMJ1EmxWmsqzeFFaeN").to_scriptPubKey()
 txout = CMutableTxOut(amount, destination)
-total = 44000
+total = 29534
 fee=4000
 txout_change = CMutableTxOut(total-fee-amount,address_change)
 
