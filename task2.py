@@ -14,18 +14,15 @@ seckey1 = CBitcoinSecret('cN1XQx8o4efyix7h48RcQkEhPurSJd1sFrhv3NhzRZpbzAUXfnk2')
 # second key
 seckey2 = CBitcoinSecret('cVisGjUQRcPHoSrb3MPNPSRCTLn62Wo9oCqZXjtpe34h11BgWS6M')
 
-# Create a redeemScript. Similar to a scriptPubKey the redeemScript must be
-# satisfied for the funds to be spent.
+# Create a redeemScript
+
 redeem_script = CScript([OP_2, seckey1.pub, seckey2.pub, OP_2, OP_CHECKMULTISIG])
 
-# Create the magic P2SH scriptPubKey format from that redeemScript. You should
-# look at the CScript.to_p2sh_scriptPubKey() function in bitcoin.core.script to
-# understand what's happening, as well as read BIP16:
-# https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki
+# Create the magic P2SH scriptPubKey format from that redeemScript
+
 script_pubkey = redeem_script.to_p2sh_scriptPubKey()
 
 # Convert the P2SH scriptPubKey to a base58 Bitcoin address and print it.
-# You'll need to send some funds to it to create a txout to spend.
 address = CBitcoinAddress.from_scriptPubKey(script_pubkey)
 
 print('Address:',str(address))
@@ -34,14 +31,8 @@ print('Address:',str(address))
 txid = lx("234bb48a9eee1b95c25be883f1784f984c6973527950e1be5cb0821bacca148d")
 vout = 1 
 
-# Specify the amount send to your P2WSH address.
 amount = 1000
 
-# Calculate an amount for the upcoming new UTXO. Set a high fee (5%) to bypass bitcoind minfee
-# setting on regtest.
-
-# Create the txin structure, which includes the outpoint. The scriptSig defaults to being empty as
-# is necessary for spending a P2WSH output.
 txin = CMutableTxIn(COutPoint(txid, vout))
 
 # Specify a destination address and create the txout.
@@ -64,7 +55,6 @@ sighash = SignatureHash(
     hashtype=SIGHASH_ALL
 )
 
-# Now sign it. We have to append the type of signature we want to the end, in this case the usual
 # SIGHASH_ALL.
 sig1 = seckey1.sign(sighash) + bytes([SIGHASH_ALL])
 sig2 = seckey2.sign(sighash) + bytes([SIGHASH_ALL])
