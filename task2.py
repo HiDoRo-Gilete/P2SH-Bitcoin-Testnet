@@ -25,7 +25,7 @@ script_pubkey = redeem_script.to_p2sh_scriptPubKey()
 # Convert the P2SH scriptPubKey to a base58 Bitcoin address and print it.
 address = CBitcoinAddress.from_scriptPubKey(script_pubkey)
 
-print('Address:',str(address))
+print('Owner address:',str(address))
 
 
 txid = lx("234bb48a9eee1b95c25be883f1784f984c6973527950e1be5cb0821bacca148d")
