@@ -1,0 +1,39 @@
+1. Install packages:
+  pip install python-bitcoinlib
+
+2. Testing
+Note: You can use hardcoded addresses (your address - sender  and destination address - receipient) on the source code or update it to your preference
+
+# ============ Task1 ============
+Private Key: cTX1aa9CenXgkfqgsj4W8o4oE5prbWaobBAp4UP1PfSLKR5DpHwM
+P2PKH Address: mmECzbuXu2D5gxgP5zsBPZu6dwmu9QFu3x
+
+Destination Address: tb1qg6m8u3shyrgf6xz0wtq92jvxqpzdc9dh9sc2l3
+
+# ============ Task2 ============
+Private Key 1: cN1XQx8o4efyix7h48RcQkEhPurSJd1sFrhv3NhzRZpbzAUXfnk2
+Private Key 2: cVisGjUQRcPHoSrb3MPNPSRCTLn62Wo9oCqZXjtpe34h11BgWS6M
+Redeem Script: 522102e3ce7e3cd05216624b65f06dd7c648bc256ab5003580ad112c28b53dfdc59cba210386b43112b149862cdac6290b6d0aacdc292f09a661808ce983cad53b44c38b1852ae
+Multisig Address: 2N64Gjq151UBNkBoceMJ1EmxWmsqzeFFaeN
+
+Destination Address: 2N4rB5gabVodvewzAbZXAcEJd2SFZWPpDfA
+
+1. Check info of sender wallet or so-called your wallet
+  https://blockstream.info/testnet/address/mmECzbuXu2D5gxgP5zsBPZu6dwmu9QFu3x (Task 1)
+  https://blockstream.info/testnet/address/2N64Gjq151UBNkBoceMJ1EmxWmsqzeFFaeN (Task 2)
+
+2. Determine an (confirmed) unspent transaction output to spend, then update following variables: 
+   txid (transaction id contains the utxo)
+   output_index or vout (index of the utxo in the transaction)
+   total (value of the utxo in satoshis)
+   amount_to_spend (amount you want to send)
+   fee (transaction fee)
+   
+Tips: You can call get_utxos for convenience
+   explorer.get_utxos("mmECzbuXu2D5gxgP5zsBPZu6dwmu9QFu3x") # Task 1
+   explorer.get_utxos("2N64Gjq151UBNkBoceMJ1EmxWmsqzeFFaeN") # Task 2
+
+3. Run test
+  Task 1: python task1.py
+  Task 2: python task2.py
+  

@@ -1,13 +1,13 @@
-# utils
-# P2PKH Script
-import os
+import os, io
 from bitcoin.wallet import CBitcoinSecret, P2PKHBitcoinAddress, P2SHBitcoinAddress
 from bitcoin import SelectParams
-from bitcoin.core import lx, COutPoint
+from bitcoin.core import b2x, lx, COutPoint
 from bitcoin.core import CMutableTxOut, CMutableTxIn, CMutableTransaction
 from bitcoin.core.script import CScript, SignatureHash, SIGHASH_ALL,OP_2,OP_CHECKMULTISIG
 from bitcoin.core.scripteval import VerifyScript
+import requests
 
+# ============== P2PKH ==============
 def create_testnet_address(secret = None):
   SelectParams('testnet')
   if secret == None: secret = os.urandom(32)
@@ -18,7 +18,7 @@ def create_testnet_address(secret = None):
   address = P2PKHBitcoinAddress.from_pubkey(public_key)
   print("Private Key:", private_key)
   print("Public Key:", public_key.hex())
-  print("Bitcoin Address:", address)
+  print("P2PKH Address:", address)
   return private_key, public_key, address
 
 def create_txin(txid, output_index):
@@ -42,8 +42,34 @@ def create_signed_transaction(inputs, outputs, my_private_key):
     VerifyScript(tx.vin[0].scriptSig, my_address.to_scriptPubKey(), tx, 0)
     return tx
 
-#============================================= P2SH ===========================================
+def broadcast_testnet_transaction_blockstream(tx):
+    """Broadcasts a transaction to the Bitcoin testnet using Blockstream.info API.
+
+    Args:
+        tx: An instance of CTransaction which representing a transaction.
+
+    Returns:
+        The transaction ID (txid) as a string if successful, or None if an error occurs.
+    """
+    serialized_hex = b2x(tx.serialize())
+    url = "https://blockstream.info/testnet/api/tx"
+    headers = {'Content-Type': 'text/plain'}  # Important for Blockstream API
+
+    try:
+        response = requests.post(url, headers=headers, data=serialized_hex)
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+        txid = response.text  # Blockstream returns the txid directly in the response body
+        print("Successfully broadcasted, TXID is", txid)
+        return txid
+    except requests.exceptions.RequestException as e:
+        print(f"Error broadcasting transaction: {e}")
+        if hasattr(e.response, 'text'):  # Print response text if available
+            print(f"Server response: {e.response.text}")
+        return None
+  
+# ============== P2SH ============== 
 def createMultisigAddress():
+    SelectParams('testnet')
     # 2-of-2 Multisig Script
     # Generate two random private keys
     private_key1 = CBitcoinSecret.from_secret_bytes(os.urandom(32))
@@ -60,26 +86,3 @@ def createMultisigAddress():
     print("Redeem Script:", redeem_script.hex())
     print("Multisig Address:", address)
 
-import requests
-def broadcast_testnet_transaction_blockstream(raw_transaction):
-    """Broadcasts a raw transaction to the Bitcoin testnet using Blockstream.info API.
-
-    Args:
-        raw_transaction: The hex-encoded string representing the raw transaction.
-
-    Returns:
-        The transaction ID (txid) as a string if successful, or None if an error occurs.
-    """
-    url = "https://blockstream.info/testnet/api/tx"
-    headers = {'Content-Type': 'text/plain'}  # Important for Blockstream API
-
-    try:
-        response = requests.post(url, headers=headers, data=raw_transaction)
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-        txid = response.text  # Blockstream returns the txid directly in the response body
-        return txid
-    except requests.exceptions.RequestException as e:
-        print(f"Error broadcasting transaction: {e}")
-        if hasattr(e.response, 'text'):  # Print response text if available
-            print(f"Server response: {e.response.text}")
-        return None

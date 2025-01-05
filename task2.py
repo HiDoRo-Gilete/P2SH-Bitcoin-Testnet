@@ -43,7 +43,6 @@ total = 29534
 fee=4000
 txout_change = CMutableTxOut(total-fee-amount,address_change)
 
-
 # Create the unsigned transaction.
 tx = CMutableTransaction([txin], [txout,txout_change])
 
@@ -62,11 +61,9 @@ sig2 = seckey2.sign(sighash) + bytes([SIGHASH_ALL])
 # Construct a witness for this P2WSH transaction and add to tx.
 txin.scriptSig = CScript([OP_0, sig1, sig2, redeem_script])
 VerifyScript(txin.scriptSig, script_pubkey, tx, 0, (SCRIPT_VERIFY_P2SH,))
-# Done
-#broadcast
-tx_hex = b2x(tx.serialize())
 
-txid=utils.broadcast_testnet_transaction_blockstream(tx_hex)
+# Broadcast transaction
+txid=utils.broadcast_testnet_transaction_blockstream(tx)
 if txid !=None:
     print("Transaction detail")
     explorer.get_transaction_detail(txid)
