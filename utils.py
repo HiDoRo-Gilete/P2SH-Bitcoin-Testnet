@@ -1,11 +1,11 @@
 # utils
 # P2PKH Script
 import os
-from bitcoin.wallet import CBitcoinSecret, P2PKHBitcoinAddress
+from bitcoin.wallet import CBitcoinSecret, P2PKHBitcoinAddress, P2SHBitcoinAddress
 from bitcoin import SelectParams
 from bitcoin.core import lx, COutPoint
 from bitcoin.core import CMutableTxOut, CMutableTxIn, CMutableTransaction
-from bitcoin.core.script import CScript, SignatureHash, SIGHASH_ALL
+from bitcoin.core.script import CScript, SignatureHash, SIGHASH_ALL,OP_2,OP_CHECKMULTISIG
 from bitcoin.core.scripteval import VerifyScript
 
 def create_testnet_address(secret = None):
@@ -43,6 +43,23 @@ def create_signed_transaction(inputs, outputs, my_private_key):
     return tx
 
 #============================================= P2SH ===========================================
+def createMultisigAddress():
+    # 2-of-2 Multisig Script
+    # Generate two random private keys
+    private_key1 = CBitcoinSecret.from_secret_bytes(os.urandom(32))
+    private_key2 = CBitcoinSecret.from_secret_bytes(os.urandom(32))
+    # Derive the public keys
+    public_key1 = private_key1.pub
+    public_key2 = private_key2.pub
+    # Create a 2-of-2 multisig redeem script
+    redeem_script = CScript([OP_2, public_key1, public_key2, OP_2, OP_CHECKMULTISIG])
+    # Create a P2SH address from the redeem script
+    address = P2SHBitcoinAddress.from_redeemScript(redeem_script)
+    print("Private Key 1:", private_key1)
+    print("Private Key 2:", private_key2)
+    print("Redeem Script:", redeem_script.hex())
+    print("Multisig Address:", address)
+
 import requests
 def broadcast_testnet_transaction_blockstream(raw_transaction):
     """Broadcasts a raw transaction to the Bitcoin testnet using Blockstream.info API.
